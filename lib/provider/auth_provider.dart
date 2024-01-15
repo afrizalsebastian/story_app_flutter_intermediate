@@ -44,4 +44,22 @@ class AuthProvider extends ChangeNotifier {
 
     return isLoggedIn;
   }
+
+  Future<bool> logout() async {
+    isLoadingLogout = true;
+    notifyListeners();
+
+    final logout = await authRepository.logout();
+    if (logout) {
+      await authRepository.deleteToken();
+      await authRepository.deleteUser();
+    }
+
+    isLoggedIn = await authRepository.isLoggedIn();
+
+    isLoadingLogout = false;
+    notifyListeners();
+
+    return !isLoggedIn;
+  }
 }

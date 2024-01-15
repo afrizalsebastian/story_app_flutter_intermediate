@@ -47,6 +47,9 @@ class StoryRouterDelegate extends RouterDelegate
         }
 
         isRegister = false;
+        _bottomNavIndex = 0;
+        onPostStory = false;
+        storyId = null;
         notifyListeners();
 
         return true;
@@ -133,8 +136,12 @@ class StoryRouterDelegate extends RouterDelegate
 
   List<Page> get _loggedInStack => [
         MaterialPage(
-          key: ValueKey('ListStoryPage'),
+          key: const ValueKey('ListStoryPage'),
           child: ListStoryPage(
+            onLogout: () {
+              isLoggedIn = false;
+              notifyListeners();
+            },
             bottomNavigationBar: bottomNavigationBar(),
           ),
         ),

@@ -36,6 +36,7 @@ class _StoryAppState extends State<StoryApp> {
     return ChangeNotifierProvider<AuthProvider>(
       create: (_) => authProvider,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Router(
           routerDelegate: storyRouterDelegate,
           backButtonDispatcher: RootBackButtonDispatcher(),

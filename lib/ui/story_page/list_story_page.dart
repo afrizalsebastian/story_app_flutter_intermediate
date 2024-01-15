@@ -3,14 +3,20 @@ import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
+import 'package:story_app_flutter_intermediate/provider/auth_provider.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 import 'package:story_app_flutter_intermediate/ui/story_page/gridview_story.dart';
 import 'package:story_app_flutter_intermediate/ui/story_page/listview_story.dart';
 
 class ListStoryPage extends StatefulWidget {
+  final Function() onLogout;
   final BottomNavigationBar bottomNavigationBar;
 
-  const ListStoryPage({super.key, required this.bottomNavigationBar});
+  const ListStoryPage({
+    super.key,
+    required this.onLogout,
+    required this.bottomNavigationBar,
+  });
 
   @override
   State<ListStoryPage> createState() => _ListStoryPageState();
@@ -32,6 +38,27 @@ class _ListStoryPageState extends State<ListStoryPage> {
             fontWeight: FontWeight.w700,
           ),
         ),
+        actions: [
+          GestureDetector(
+            onTap: () async {
+              final authRead = context.read<AuthProvider>();
+              final result = await authRead.logout();
+
+              if (result) widget.onLogout();
+            },
+            child: context.watch<AuthProvider>().isLoadingLogout
+                ? const Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ),
+          ),
+        ],
         backgroundColor: Styles.primaryColor,
       ),
       body: ChangeNotifierProvider<ListStoryProvider>(
