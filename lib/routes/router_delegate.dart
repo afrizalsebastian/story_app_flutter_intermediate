@@ -4,8 +4,9 @@ import 'package:story_app_flutter_intermediate/db/auth_repository.dart';
 import 'package:story_app_flutter_intermediate/ui/auth/login_page.dart';
 import 'package:story_app_flutter_intermediate/ui/auth/register_page.dart';
 import 'package:story_app_flutter_intermediate/ui/splash_screen/splash_screen.dart';
-import 'package:story_app_flutter_intermediate/ui/story_page/list_story_page.dart';
-import 'package:story_app_flutter_intermediate/ui/story_page/post_story.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/detail_story/detail_story_page.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/list_story/list_story_page.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/post_story/post_story_page.dart';
 
 class StoryRouterDelegate extends RouterDelegate
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
@@ -138,6 +139,10 @@ class StoryRouterDelegate extends RouterDelegate
         MaterialPage(
           key: const ValueKey('ListStoryPage'),
           child: ListStoryPage(
+            onTap: (String selectedStoryId) {
+              storyId = selectedStoryId;
+              notifyListeners();
+            },
             onLogout: () {
               isLoggedIn = false;
               notifyListeners();
@@ -145,6 +150,13 @@ class StoryRouterDelegate extends RouterDelegate
             bottomNavigationBar: bottomNavigationBar(),
           ),
         ),
+        if (storyId != null)
+          MaterialPage(
+            key: ValueKey(storyId),
+            child: DetailStoryPage(
+              storyId: storyId!,
+            ),
+          ),
         if (onPostStory == true)
           MaterialPage(
             key: const ValueKey('PostStoryPage'),

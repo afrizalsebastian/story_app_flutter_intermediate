@@ -7,13 +7,12 @@ import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 
 class ListViewStory extends StatelessWidget {
-  const ListViewStory({super.key});
+  final Function(String) onTap;
+  const ListViewStory({super.key, required this.onTap});
 
   Widget _createItemList(BuildContext context, ListStory story) {
     return GestureDetector(
-      onTap: () {
-        print(story.id);
-      },
+      onTap: () => onTap(story.id),
       child: Container(
         height: 250,
         padding: const EdgeInsets.all(8),

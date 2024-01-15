@@ -5,16 +5,18 @@ import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/auth_provider.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
-import 'package:story_app_flutter_intermediate/ui/story_page/gridview_story.dart';
-import 'package:story_app_flutter_intermediate/ui/story_page/listview_story.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/list_story/gridview_story.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/list_story/listview_story.dart';
 
 class ListStoryPage extends StatefulWidget {
   final Function() onLogout;
+  final Function(String) onTap;
   final BottomNavigationBar bottomNavigationBar;
 
   const ListStoryPage({
     super.key,
     required this.onLogout,
+    required this.onTap,
     required this.bottomNavigationBar,
   });
 
@@ -86,11 +88,19 @@ class _ListStoryPageState extends State<ListStoryPage> {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     if (constraints.maxWidth < 600) {
-                      return const ListViewStory();
+                      return ListViewStory(
+                        onTap: widget.onTap,
+                      );
                     } else if (constraints.maxWidth < 900) {
-                      return const GridViewStory(gridCount: 2);
+                      return GridViewStory(
+                        gridCount: 2,
+                        onTap: widget.onTap,
+                      );
                     } else {
-                      return const GridViewStory(gridCount: 4);
+                      return GridViewStory(
+                        gridCount: 4,
+                        onTap: widget.onTap,
+                      );
                     }
                   },
                 ),

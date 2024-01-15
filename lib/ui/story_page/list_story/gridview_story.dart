@@ -8,16 +8,16 @@ import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart
 
 class GridViewStory extends StatelessWidget {
   final int gridCount;
-  const GridViewStory({super.key, required this.gridCount});
+  final Function(String) onTap;
+  const GridViewStory(
+      {super.key, required this.gridCount, required this.onTap});
 
   List<Widget> _createGrid(BuildContext context, List<ListStory> stories) {
     return List<Widget>.from(
       stories.map(
         (story) {
           return GestureDetector(
-            onTap: () {
-              print(story.id);
-            },
+            onTap: () => onTap(story.id),
             child: Container(
               height: 250,
               padding: const EdgeInsets.all(8),
