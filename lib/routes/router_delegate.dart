@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/db/auth_repository.dart';
 import 'package:story_app_flutter_intermediate/ui/auth/login_page.dart';
 import 'package:story_app_flutter_intermediate/ui/auth/register_page.dart';
 import 'package:story_app_flutter_intermediate/ui/splash_screen/splash_screen.dart';
 import 'package:story_app_flutter_intermediate/ui/story_page/list_story_page.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/post_story.dart';
 
 class StoryRouterDelegate extends RouterDelegate
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
@@ -98,10 +100,50 @@ class StoryRouterDelegate extends RouterDelegate
           ),
       ];
 
-  List<Page> get _loggedInStack => const [
+  int _bottomNavIndex = 0;
+  String? storyId;
+  bool onPostStory = false;
+
+  BottomNavigationBar bottomNavigationBar() {
+    return BottomNavigationBar(
+      selectedItemColor: Styles.primaryColor,
+      currentIndex: _bottomNavIndex,
+      onTap: (value) {
+        _bottomNavIndex = value;
+        if (value == 1) {
+          onPostStory = true;
+          notifyListeners();
+        } else {
+          onPostStory = false;
+          notifyListeners();
+        }
+      },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_rounded),
+          label: "Home",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.post_add_rounded),
+          label: "Post Story",
+        )
+      ],
+    );
+  }
+
+  List<Page> get _loggedInStack => [
         MaterialPage(
           key: ValueKey('ListStoryPage'),
-          child: ListStoryPage(),
+          child: ListStoryPage(
+            bottomNavigationBar: bottomNavigationBar(),
+          ),
         ),
+        if (onPostStory == true)
+          MaterialPage(
+            key: const ValueKey('PostStoryPage'),
+            child: PostStory(
+              bottomNavigationBar: bottomNavigationBar(),
+            ),
+          ),
       ];
 }

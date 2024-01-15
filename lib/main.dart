@@ -24,7 +24,10 @@ class _StoryAppState extends State<StoryApp> {
   void initState() {
     super.initState();
     final authRepository = AuthRepository();
-    authProvider = AuthProvider(authRepository, ApiServices());
+    authProvider = AuthProvider(
+      authRepository,
+      ApiServices(),
+    );
     storyRouterDelegate = StoryRouterDelegate(authRepository);
   }
 

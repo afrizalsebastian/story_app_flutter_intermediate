@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:story_app_flutter_intermediate/model/list_story.dart';
 import 'package:story_app_flutter_intermediate/model/login.dart';
 
 class ApiServices {
@@ -45,6 +47,28 @@ class ApiServices {
       return loginDataFromJson(response.body);
     } else {
       throw Exception('Login Failed');
+    }
+  }
+
+  Future<List<ListStory>> getListStory(int page, int size) async {
+    Uri url = Uri.parse("$_baseUrl/stories?page=$page&size=$size");
+
+    final preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("authToken") ?? "";
+    String bearerToken = "Bearer $token";
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': bearerToken,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return listStoryResponseFromJson(response.body).listStory;
+    } else {
+      throw Exception('Failed to fetch data');
     }
   }
 }
