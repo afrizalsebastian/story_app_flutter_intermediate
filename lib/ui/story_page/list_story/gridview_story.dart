@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
-import 'package:story_app_flutter_intermediate/model/list_story.dart';
+import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 
@@ -12,7 +12,7 @@ class GridViewStory extends StatelessWidget {
   const GridViewStory(
       {super.key, required this.gridCount, required this.onTap});
 
-  List<Widget> _createGrid(BuildContext context, List<ListStory> stories) {
+  List<Widget> _createGrid(BuildContext context, List<Story> stories) {
     return List<Widget>.from(
       stories.map(
         (story) {
@@ -88,7 +88,7 @@ class GridViewStory extends StatelessWidget {
         child: CircularProgressIndicator(),
       );
     } else if (provider.state == ResultState.hasData) {
-      final List<ListStory> listStory = provider.listStory;
+      final List<Story> listStory = provider.listStory;
 
       return GridView.count(
         crossAxisCount: gridCount,

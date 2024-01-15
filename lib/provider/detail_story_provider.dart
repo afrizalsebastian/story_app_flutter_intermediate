@@ -5,21 +5,20 @@ import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 
-class ListStoryProvider extends ChangeNotifier {
+class DetailStoryProvider extends ChangeNotifier {
   final ApiServices apiServices;
+  final String storyId;
 
-  ListStoryProvider({required this.apiServices}) {
+  DetailStoryProvider({required this.apiServices, required this.storyId}) {
     _fetchData();
   }
 
-  List<Story> _listStory = [];
+  late Story _story;
   late ResultState _state;
   String _message = '';
-  int page = 1;
-  int size = 10;
 
   String get message => _message;
-  List<Story> get listStory => _listStory;
+  Story get story => _story;
   ResultState get state => _state;
 
   Future<dynamic> _fetchData() async {
@@ -27,18 +26,10 @@ class ListStoryProvider extends ChangeNotifier {
       _state = ResultState.loading;
       notifyListeners();
 
-      final listStoryData = await apiServices.getListStory(page, size);
-      if (listStoryData.isEmpty) {
-        _state = ResultState.noData;
-        _listStory = [];
-        notifyListeners();
-        return _message = 'There is no Story Posted';
-      } else {
-        _state = ResultState.hasData;
-        _listStory = listStoryData;
-        notifyListeners();
-        return listStory;
-      }
+      final storyData = await apiServices.getDetailStory(storyId);
+      _state = ResultState.hasData;
+      notifyListeners();
+      return _story = storyData;
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
@@ -50,15 +41,5 @@ class ListStoryProvider extends ChangeNotifier {
         return message;
       }
     }
-  }
-
-  Future<dynamic> prevoiusPage() async {
-    page--;
-    _fetchData();
-  }
-
-  Future<dynamic> nextPage() async {
-    page++;
-    _fetchData();
   }
 }

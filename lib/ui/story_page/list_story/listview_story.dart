@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
-import 'package:story_app_flutter_intermediate/model/list_story.dart';
+import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 
@@ -10,7 +10,7 @@ class ListViewStory extends StatelessWidget {
   final Function(String) onTap;
   const ListViewStory({super.key, required this.onTap});
 
-  Widget _createItemList(BuildContext context, ListStory story) {
+  Widget _createItemList(BuildContext context, Story story) {
     return GestureDetector(
       onTap: () => onTap(story.id),
       child: Container(
@@ -78,7 +78,7 @@ class ListViewStory extends StatelessWidget {
         child: CircularProgressIndicator(),
       );
     } else if (provider.state == ResultState.hasData) {
-      final List<ListStory> listStory = provider.listStory;
+      final List<Story> listStory = provider.listStory;
 
       return ListView.builder(
         itemCount: listStory.length,
@@ -93,9 +93,9 @@ class ListViewStory extends StatelessWidget {
         ),
       );
     } else {
-      return const Center(
+      return Center(
         child: Material(
-          child: Text(''),
+          child: Text(provider.message),
         ),
       );
     }

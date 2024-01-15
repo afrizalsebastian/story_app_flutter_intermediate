@@ -107,7 +107,8 @@ class _ListStoryPageState extends State<ListStoryPage> {
               ),
               Consumer<ListStoryProvider>(
                 builder: (context, provider, child) {
-                  return provider.state == ResultState.hasData
+                  return provider.state == ResultState.hasData ||
+                          provider.state == ResultState.noData
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
