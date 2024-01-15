@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
-import 'package:story_app_flutter_intermediate/model/user.dart';
 import 'package:story_app_flutter_intermediate/provider/auth_provider.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   final Function() onRegister;
   final Function() onLogin;
-  const LoginPage({super.key, required this.onRegister, required this.onLogin});
+  const RegisterPage(
+      {super.key, required this.onRegister, required this.onLogin});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -40,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'Login',
+                    'Register',
                     style: TextStyle(
                       color: Styles.primaryColor,
                       fontSize: 32,
@@ -48,21 +50,42 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const Text(
-                    'Welcome back, glad to see you again!',
+                    'Create a new account to continue.',
                     style: TextStyle(
                       color: Styles.textColor,
                     ),
                   ),
                   const SizedBox(height: 30),
-                  const Text(
-                    'Email',
-                    style: TextStyle(
-                      color: Styles.primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                  TextFormField(
+                    controller: nameController,
+                    cursorColor: Styles.primaryColor,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email.';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Name',
+                      focusColor: Styles.primaryColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          width: 2.0,
+                          color: Styles.primaryColor,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: emailController,
                     cursorColor: Styles.primaryColor,
@@ -93,15 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Password',
-                    style: TextStyle(
-                      color: Styles.primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   TextFormField(
                     controller: passwordController,
                     cursorColor: Styles.primaryColor,
@@ -133,32 +147,26 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  context.watch<AuthProvider>().isLoadingLogin
+                  context.watch<AuthProvider>().isLoadingRegister
                       ? const Center(
                           child: CircularProgressIndicator(),
                         )
                       : ElevatedButton(
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
-                              final scaffoldMessenger =
-                                  ScaffoldMessenger.of(context);
-                              final User user = User(
-                                email: emailController.text,
-                                password: passwordController.text,
-                              );
                               final authRead = context.read<AuthProvider>();
 
-                              final result = await authRead.login(user);
-                              if (result) {
-                                widget.onLogin();
-                              } else {
-                                scaffoldMessenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        "Your email or password is invalid"),
-                                  ),
-                                );
-                              }
+                              final name = nameController.text;
+                              final email = emailController.text;
+                              final password = passwordController.text;
+
+                              final result = await authRead.register(
+                                name,
+                                email,
+                                password,
+                              );
+
+                              if (result) widget.onRegister();
                             }
                           },
                           style: const ButtonStyle(
@@ -166,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                                 MaterialStatePropertyAll(Styles.primaryColor),
                           ),
                           child: const Text(
-                            "Login",
+                            "Register",
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -181,9 +189,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => widget.onRegister(),
+                        onPressed: () => widget.onLogin(),
                         child: const Text(
-                          'Register',
+                          'Login',
                           style: TextStyle(color: Styles.primaryColor),
                         ),
                       ),

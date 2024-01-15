@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListStoryPage extends StatelessWidget {
   const ListStoryPage({super.key});
@@ -7,7 +8,17 @@ class ListStoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('LIST STORY PAGE'),
+        child: Column(children: [
+          Text('LIST STORY PAGE'),
+          ElevatedButton(
+              onPressed: () async {
+                final preferences = await SharedPreferences.getInstance();
+                final token = preferences.getString("authToken") ?? "";
+
+                print(token);
+              },
+              child: Text('Test'))
+        ]),
       ),
     );
   }

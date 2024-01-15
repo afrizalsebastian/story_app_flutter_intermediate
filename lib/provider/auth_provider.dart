@@ -15,13 +15,15 @@ class AuthProvider extends ChangeNotifier {
   bool isLoadingRegister = false;
   bool isLoggedIn = false;
 
-  Future<void> register(String name, String email, String password) async {
+  Future<bool> register(String name, String email, String password) async {
     isLoadingRegister = true;
     notifyListeners();
 
     await apiServices.register(name, email, password);
     isLoadingRegister = false;
     notifyListeners();
+
+    return true;
   }
 
   Future<bool> login(User user) async {
@@ -32,6 +34,7 @@ class AuthProvider extends ChangeNotifier {
         await apiServices.login(user.email!, user.password!);
     if (!loginData.error) {
       await authRepository.saveUser(user);
+      await authRepository.saveToken(loginData.loginResult.token);
       await authRepository.login();
     }
     isLoggedIn = await authRepository.isLoggedIn();

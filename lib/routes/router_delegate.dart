@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:story_app_flutter_intermediate/db/auth_repository.dart';
 import 'package:story_app_flutter_intermediate/ui/auth/login_page.dart';
+import 'package:story_app_flutter_intermediate/ui/auth/register_page.dart';
 import 'package:story_app_flutter_intermediate/ui/splash_screen/splash_screen.dart';
 import 'package:story_app_flutter_intermediate/ui/story_page/list_story_page.dart';
 
@@ -67,11 +68,34 @@ class StoryRouterDelegate extends RouterDelegate
         ),
       ];
 
-  List<Page> get _loggedOutStack => const [
+  List<Page> get _loggedOutStack => [
         MaterialPage(
-          key: ValueKey('LoginPage'),
-          child: LoginPage(),
+          key: const ValueKey('LoginPage'),
+          child: LoginPage(
+            onLogin: () {
+              isLoggedIn = true;
+              notifyListeners();
+            },
+            onRegister: () {
+              isRegister = true;
+              notifyListeners();
+            },
+          ),
         ),
+        if (isRegister == true)
+          MaterialPage(
+            key: const ValueKey('RegisterPage'),
+            child: RegisterPage(
+              onRegister: () {
+                isRegister = false;
+                notifyListeners();
+              },
+              onLogin: () {
+                isRegister = false;
+                notifyListeners();
+              },
+            ),
+          ),
       ];
 
   List<Page> get _loggedInStack => const [
