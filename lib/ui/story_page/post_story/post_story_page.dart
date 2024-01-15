@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/provider/post_story_provider.dart';
+import 'package:story_app_flutter_intermediate/provider/upload_provider.dart';
 
 class PostStory extends StatefulWidget {
   final BottomNavigationBar bottomNavigationBar;
@@ -17,6 +19,15 @@ class PostStory extends StatefulWidget {
 }
 
 class _PostStoryState extends State<PostStory> {
+  final descriptionController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +38,7 @@ class _PostStoryState extends State<PostStory> {
             child: Consumer<PostStoryProvider>(
               builder: (context, provider, _) {
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       color: Styles.primaryColor,
@@ -45,6 +56,7 @@ class _PostStoryState extends State<PostStory> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 32),
                     Container(
                       height: 300,
                       margin: const EdgeInsets.all(8),
@@ -102,7 +114,68 @@ class _PostStoryState extends State<PostStory> {
                           ),
                         ),
                       ],
-                    )
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 150,
+                      padding: const EdgeInsets.all(8),
+                      child: TextField(
+                        minLines: null,
+                        maxLines: null,
+                        expands: true,
+                        textAlign: TextAlign.justify,
+                        textAlignVertical: TextAlignVertical.top,
+                        controller: descriptionController,
+                        cursorColor: Styles.primaryColor,
+                        decoration: InputDecoration(
+                          hintText: 'Description',
+                          focusColor: Styles.primaryColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(width: 1.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(width: 1.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                              width: 2.0,
+                              color: Styles.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    ChangeNotifierProvider<UploadProvider>(
+                      create: (_) => UploadProvider(
+                        apiService: ApiServices(),
+                      ),
+                      child: Consumer<UploadProvider>(
+                        builder: (context, uploadProvider, _) {
+                          return SizedBox(
+                            width: 200,
+                            child: TextButton(
+                              style: const ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                  Styles.primaryColor,
+                                ),
+                              ),
+                              onPressed: () => _onUpload(
+                                provider,
+                                uploadProvider,
+                                descriptionController.text,
+                              ),
+                              child: const Text(
+                                'Upload',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 );
               },
@@ -111,6 +184,36 @@ class _PostStoryState extends State<PostStory> {
         ),
       ),
       bottomNavigationBar: widget.bottomNavigationBar,
+    );
+  }
+
+  _onUpload(PostStoryProvider psProvider, UploadProvider uploadProvider,
+      String description) async {
+    final ScaffoldMessengerState scaffoldMessengerState =
+        ScaffoldMessenger.of(context);
+
+    final imagePath = psProvider.imagePath;
+    final imageFile = psProvider.imageFile;
+    if (imagePath == null || imageFile == null) return;
+
+    final fileName = imageFile.name;
+    final bytes = await imageFile.readAsBytes();
+
+    final newBytes = await uploadProvider.compressImage(bytes);
+
+    await uploadProvider.upload(
+      newBytes,
+      fileName,
+      description,
+    );
+
+    if (uploadProvider.uploadResponse != null) {
+      psProvider.setImageFile(null);
+      psProvider.setImagePath(null);
+    }
+
+    scaffoldMessengerState.showSnackBar(
+      SnackBar(content: Text(uploadProvider.message)),
     );
   }
 

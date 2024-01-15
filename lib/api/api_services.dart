@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/model/list_story.dart';
 import 'package:story_app_flutter_intermediate/model/login.dart';
+import 'package:story_app_flutter_intermediate/model/upload_response.dart';
 
 class ApiServices {
   static const String _baseUrl = 'https://story-api.dicoding.dev/v1';
@@ -92,6 +94,54 @@ class ApiServices {
       return detailStoryResponseFromJson(response.body).story;
     } else {
       throw Exception('Failed to fetch data');
+    }
+  }
+
+  Future<UploadResponse> uploadDocument(
+    List<int> bytes,
+    String fileName,
+    String description,
+  ) async {
+    Uri url = Uri.parse("$_baseUrl/stories");
+
+    final preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString("authToken") ?? "";
+    String bearerToken = "Bearer $token";
+
+    var request = http.MultipartRequest('POST', url);
+
+    final multiPartFile = http.MultipartFile.fromBytes(
+      "photo",
+      bytes,
+      filename: fileName,
+    );
+
+    final Map<String, String> fields = {
+      "description": description,
+    };
+
+    final Map<String, String> headers = {
+      "Content-type": "multipart/form-data",
+      'Authorization': bearerToken,
+    };
+
+    request.files.add(multiPartFile);
+    request.fields.addAll(fields);
+    request.headers.addAll(headers);
+
+    final http.StreamedResponse streamedResponse = await request.send();
+    final int statusCode = streamedResponse.statusCode;
+
+    final Uint8List responseList = await streamedResponse.stream.toBytes();
+    final String responseData = String.fromCharCodes(responseList);
+
+    if (statusCode == 201) {
+      final UploadResponse uploadResponse = UploadResponse.fromJson(
+        responseData,
+      );
+      return uploadResponse;
+    } else {
+      throw Exception("Upload file error");
     }
   }
 }
