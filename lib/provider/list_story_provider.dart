@@ -22,6 +22,10 @@ class ListStoryProvider extends ChangeNotifier {
   List<Story> get listStory => _listStory;
   ResultState get state => _state;
 
+  Future<dynamic> updateList() async {
+    return await _fetchData();
+  }
+
   Future<dynamic> _fetchData() async {
     try {
       _state = ResultState.loading;

@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/db/auth_repository.dart';
 import 'package:story_app_flutter_intermediate/provider/auth_provider.dart';
+import 'package:story_app_flutter_intermediate/provider/detail_story_provider.dart';
+import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
+import 'package:story_app_flutter_intermediate/provider/post_story_provider.dart';
+import 'package:story_app_flutter_intermediate/provider/upload_provider.dart';
 import 'package:story_app_flutter_intermediate/routes/router_delegate.dart';
 
 void main() {
@@ -33,8 +37,25 @@ class _StoryAppState extends State<StoryApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AuthProvider>(
-      create: (_) => authProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => authProvider),
+        ChangeNotifierProvider(
+          create: (context) => ListStoryProvider(
+            apiServices: ApiServices(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              DetailStoryProvider(apiServices: ApiServices(), storyId: ''),
+        ),
+        ChangeNotifierProvider(create: (context) => PostStoryProvider()),
+        ChangeNotifierProvider(
+          create: (context) => UploadProvider(
+            apiService: ApiServices(),
+          ),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Router(

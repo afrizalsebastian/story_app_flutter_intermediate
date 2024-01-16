@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
+import 'package:story_app_flutter_intermediate/provider/detail_story_provider.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 
 class ListViewStory extends StatelessWidget {
@@ -12,7 +13,11 @@ class ListViewStory extends StatelessWidget {
 
   Widget _createItemList(BuildContext context, Story story) {
     return GestureDetector(
-      onTap: () => onTap(story.id),
+      onTap: () {
+        final detailRead = context.read<DetailStoryProvider>();
+        detailRead.upadteStoryId(story.id);
+        onTap(story.id);
+      },
       child: Container(
         height: 250,
         padding: const EdgeInsets.all(8),
@@ -72,13 +77,16 @@ class ListViewStory extends StatelessWidget {
     );
   }
 
-  Widget _buildList(BuildContext context, ListStoryProvider provider) {
-    if (provider.state == ResultState.loading) {
+  Widget _buildList(BuildContext context) {
+    final listWatch = context.watch<ListStoryProvider>();
+    final listRead = context.read<ListStoryProvider>();
+
+    if (listWatch.state == ResultState.loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
-    } else if (provider.state == ResultState.hasData) {
-      final List<Story> listStory = provider.listStory;
+    } else if (listWatch.state == ResultState.hasData) {
+      final List<Story> listStory = listRead.listStory;
 
       return ListView.builder(
         itemCount: listStory.length,
@@ -86,27 +94,23 @@ class ListViewStory extends StatelessWidget {
           return _createItemList(context, listStory[index]);
         },
       );
-    } else if (provider.state == ResultState.error) {
+    } else if (listWatch.state == ResultState.error) {
       return Center(
         child: Material(
-          child: Text(provider.message),
+          child: Text(listRead.message),
         ),
       );
     } else {
       return Center(
         child: Material(
-          child: Text(provider.message),
+          child: Text(listRead.message),
         ),
       );
     }
   }
 
   Widget _consumerList(BuildContext context) {
-    return Consumer<ListStoryProvider>(
-      builder: (context, provider, child) {
-        return _buildList(context, provider);
-      },
-    );
+    return _buildList(context);
   }
 
   @override

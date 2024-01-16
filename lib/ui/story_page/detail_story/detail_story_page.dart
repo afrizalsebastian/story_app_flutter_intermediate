@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
@@ -101,10 +100,43 @@ class DetailStoryPage extends StatelessWidget {
     );
   }
 
+  Widget _consumerDetail(BuildContext context) {
+    final detailWatch = context.watch<DetailStoryProvider>();
+    final detailRead = context.read<DetailStoryProvider>();
+
+    if (detailWatch.state == ResultState.loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (detailWatch.state == ResultState.hasData) {
+      final Story story = detailRead.story;
+
+      return _createBody(context, story);
+    } else if (detailWatch.state == ResultState.error) {
+      return Center(
+        child: Material(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(detailRead.message),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Center(
+        child: Material(
+          child: Text(''),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Detail Story',
           style: TextStyle(
@@ -112,53 +144,10 @@ class DetailStoryPage extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_rounded,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        leading: null,
         backgroundColor: Styles.primaryColor,
       ),
-      body: ChangeNotifierProvider<DetailStoryProvider>(
-        create: (_) => DetailStoryProvider(
-          apiServices: ApiServices(),
-          storyId: storyId,
-        ),
-        child: Consumer<DetailStoryProvider>(
-          builder: (context, provider, child) {
-            if (provider.state == ResultState.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (provider.state == ResultState.hasData) {
-              final Story story = provider.story;
-
-              return _createBody(context, story);
-            } else if (provider.state == ResultState.error) {
-              return Center(
-                child: Material(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(provider.message),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return const Center(
-                child: Material(
-                  child: Text(''),
-                ),
-              );
-            }
-          },
-        ),
-      ),
+      body: _consumerDetail(context),
     );
   }
 }

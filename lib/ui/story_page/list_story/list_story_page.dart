@@ -31,6 +31,9 @@ class _ListStoryPageState extends State<ListStoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final listWatch = context.watch<ListStoryProvider>();
+    final listRead = context.read<ListStoryProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -63,102 +66,89 @@ class _ListStoryPageState extends State<ListStoryPage> {
         ],
         backgroundColor: Styles.primaryColor,
       ),
-      body: ChangeNotifierProvider<ListStoryProvider>(
-        create: (_) => _listStoryProvider,
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              Consumer<ListStoryProvider>(
-                builder: (context, provider, child) {
-                  return provider.state == ResultState.hasData
-                      ? const Text(
-                          'All Story For You',
-                          style: TextStyle(
-                            color: Styles.primaryColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
+      body: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            listWatch.state == ResultState.hasData
+                ? const Text(
+                    'All Story For You',
+                    style: TextStyle(
+                      color: Styles.primaryColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                : Container(),
+            const SizedBox(height: 8),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 600) {
+                    return ListViewStory(
+                      onTap: widget.onTap,
+                    );
+                  } else if (constraints.maxWidth < 900) {
+                    return GridViewStory(
+                      gridCount: 2,
+                      onTap: widget.onTap,
+                    );
+                  } else {
+                    return GridViewStory(
+                      gridCount: 4,
+                      onTap: widget.onTap,
+                    );
+                  }
+                },
+              ),
+            ),
+            listWatch.state == ResultState.hasData ||
+                    listWatch.state == ResultState.noData
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (listWatch.page != 1)
+                        TextButton(
+                          onPressed: () {
+                            listRead.prevoiusPage();
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.keyboard_double_arrow_left_rounded,
+                                color: Styles.primaryColor,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Previous',
+                                style: TextStyle(color: Styles.primaryColor),
+                              )
+                            ],
                           ),
-                        )
-                      : Container();
-                },
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth < 600) {
-                      return ListViewStory(
-                        onTap: widget.onTap,
-                      );
-                    } else if (constraints.maxWidth < 900) {
-                      return GridViewStory(
-                        gridCount: 2,
-                        onTap: widget.onTap,
-                      );
-                    } else {
-                      return GridViewStory(
-                        gridCount: 4,
-                        onTap: widget.onTap,
-                      );
-                    }
-                  },
-                ),
-              ),
-              Consumer<ListStoryProvider>(
-                builder: (context, provider, child) {
-                  return provider.state == ResultState.hasData ||
-                          provider.state == ResultState.noData
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            if (provider.page != 1)
-                              TextButton(
-                                onPressed: () {
-                                  provider.prevoiusPage();
-                                },
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.keyboard_double_arrow_left_rounded,
-                                      color: Styles.primaryColor,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Previous',
-                                      style:
-                                          TextStyle(color: Styles.primaryColor),
-                                    )
-                                  ],
-                                ),
+                        ),
+                      if (listWatch.listStory.length >= listWatch.size)
+                        TextButton(
+                          onPressed: () {
+                            listRead.nextPage();
+                          },
+                          child: const Row(
+                            children: [
+                              Text(
+                                'Next',
+                                style: TextStyle(color: Styles.primaryColor),
                               ),
-                            if (provider.listStory.length >= provider.size)
-                              TextButton(
-                                onPressed: () {
-                                  provider.nextPage();
-                                },
-                                child: const Row(
-                                  children: [
-                                    Text(
-                                      'Next',
-                                      style:
-                                          TextStyle(color: Styles.primaryColor),
-                                    ),
-                                    SizedBox(width: 4),
-                                    Icon(
-                                      Icons.keyboard_double_arrow_right_rounded,
-                                      color: Styles.primaryColor,
-                                    ),
-                                  ],
-                                ),
+                              SizedBox(width: 4),
+                              Icon(
+                                Icons.keyboard_double_arrow_right_rounded,
+                                color: Styles.primaryColor,
                               ),
-                          ],
-                        )
-                      : Container();
-                },
-              )
-            ],
-          ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  )
+                : Container(),
+          ],
         ),
       ),
       bottomNavigationBar: widget.bottomNavigationBar,

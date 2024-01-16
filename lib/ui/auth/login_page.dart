@@ -153,9 +153,10 @@ class _LoginPageState extends State<LoginPage> {
                                 widget.onLogin();
                               } else {
                                 scaffoldMessenger.showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                        "Your email or password is invalid"),
+                                      authRead.errorLogin,
+                                    ),
                                   ),
                                 );
                               }

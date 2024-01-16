@@ -70,7 +70,6 @@ class UploadProvider extends ChangeNotifier {
     List<int> newByte = bytes;
 
     do {
-      ///
       compressTall -= 0.1;
 
       final newImage = img.copyResize(

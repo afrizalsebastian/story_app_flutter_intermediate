@@ -154,6 +154,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       : ElevatedButton(
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
+                              final scaffoldMessenger =
+                                  ScaffoldMessenger.of(context);
                               final authRead = context.read<AuthProvider>();
 
                               final name = nameController.text;
@@ -166,7 +168,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 password,
                               );
 
-                              if (result) widget.onRegister();
+                              if (result) {
+                                widget.onRegister();
+                              } else {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      authRead.errorRegister,
+                                    ),
+                                  ),
+                                );
+                              }
                             }
                           },
                           style: const ButtonStyle(

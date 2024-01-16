@@ -14,35 +14,55 @@ class AuthProvider extends ChangeNotifier {
   bool isLoadingLogout = false;
   bool isLoadingRegister = false;
   bool isLoggedIn = false;
+  String errorLogin = '';
+  String errorRegister = '';
 
   Future<bool> register(String name, String email, String password) async {
-    isLoadingRegister = true;
-    notifyListeners();
+    try {
+      isLoadingRegister = true;
+      notifyListeners();
 
-    await apiServices.register(name, email, password);
-    isLoadingRegister = false;
-    notifyListeners();
+      await apiServices.register(name, email, password);
+      isLoadingRegister = false;
+      notifyListeners();
 
-    return true;
+      return true;
+    } on Exception catch (error) {
+      errorRegister = error.toString().split(': ').last;
+
+      isLoadingRegister = false;
+      notifyListeners();
+
+      return false;
+    }
   }
 
   Future<bool> login(User user) async {
-    isLoadingLogin = true;
-    notifyListeners();
+    try {
+      isLoadingLogin = true;
+      notifyListeners();
 
-    final LoginData loginData =
-        await apiServices.login(user.email!, user.password!);
-    if (!loginData.error) {
-      await authRepository.saveUser(user);
-      await authRepository.saveToken(loginData.loginResult.token);
-      await authRepository.login();
+      final LoginData loginData =
+          await apiServices.login(user.email!, user.password!);
+      if (!loginData.error) {
+        await authRepository.saveUser(user);
+        await authRepository.saveToken(loginData.loginResult.token);
+        await authRepository.login();
+      }
+      isLoggedIn = await authRepository.isLoggedIn();
+
+      isLoadingLogin = false;
+      notifyListeners();
+
+      return isLoggedIn;
+    } catch (error) {
+      errorLogin = error.toString().split(': ').last;
+
+      isLoadingLogin = false;
+      notifyListeners();
+
+      return isLoggedIn;
     }
-    isLoggedIn = await authRepository.isLoggedIn();
-
-    isLoadingLogin = false;
-    notifyListeners();
-
-    return isLoggedIn;
   }
 
   Future<bool> logout() async {

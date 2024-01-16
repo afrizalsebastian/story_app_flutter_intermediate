@@ -27,7 +27,7 @@ class ApiServices {
       body: body,
     );
     if (response.statusCode != 201) {
-      throw Exception('Registration Failed');
+      throw Exception(json.decode(response.body)['message']);
     }
   }
 
@@ -49,7 +49,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return loginDataFromJson(response.body);
     } else {
-      throw Exception('Login Failed');
+      throw Exception(json.decode(response.body)['message']);
     }
   }
 

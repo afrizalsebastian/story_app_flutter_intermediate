@@ -7,11 +7,9 @@ import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 
 class DetailStoryProvider extends ChangeNotifier {
   final ApiServices apiServices;
-  final String storyId;
+  String storyId;
 
-  DetailStoryProvider({required this.apiServices, required this.storyId}) {
-    _fetchData();
-  }
+  DetailStoryProvider({required this.apiServices, required this.storyId});
 
   late Story _story;
   late ResultState _state;
@@ -20,6 +18,11 @@ class DetailStoryProvider extends ChangeNotifier {
   String get message => _message;
   Story get story => _story;
   ResultState get state => _state;
+
+  Future<dynamic> upadteStoryId(String newStoryId) async {
+    storyId = newStoryId;
+    return await _fetchData();
+  }
 
   Future<dynamic> _fetchData() async {
     try {

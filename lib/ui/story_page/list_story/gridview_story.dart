@@ -82,13 +82,16 @@ class GridViewStory extends StatelessWidget {
     );
   }
 
-  Widget _buildGrid(BuildContext context, ListStoryProvider provider) {
-    if (provider.state == ResultState.loading) {
+  Widget _buildGrid(BuildContext context) {
+    final listWatch = context.watch<ListStoryProvider>();
+    final listRead = context.read<ListStoryProvider>();
+
+    if (listWatch.state == ResultState.loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
-    } else if (provider.state == ResultState.hasData) {
-      final List<Story> listStory = provider.listStory;
+    } else if (listWatch.state == ResultState.hasData) {
+      final List<Story> listStory = listRead.listStory;
 
       return GridView.count(
         crossAxisCount: gridCount,
@@ -96,10 +99,10 @@ class GridViewStory extends StatelessWidget {
         childAspectRatio: 1.5,
         children: _createGrid(context, listStory),
       );
-    } else if (provider.state == ResultState.error) {
+    } else if (listWatch.state == ResultState.error) {
       return Center(
         child: Material(
-          child: Text(provider.message),
+          child: Text(listRead.message),
         ),
       );
     } else {
@@ -112,11 +115,7 @@ class GridViewStory extends StatelessWidget {
   }
 
   Widget _consumerGrid(BuildContext context) {
-    return Consumer<ListStoryProvider>(
-      builder: (context, provider, _) {
-        return _buildGrid(context, provider);
-      },
-    );
+    return _buildGrid(context);
   }
 
   @override
