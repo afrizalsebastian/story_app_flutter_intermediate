@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/auth_provider.dart';
@@ -25,10 +24,6 @@ class ListStoryPage extends StatefulWidget {
 }
 
 class _ListStoryPageState extends State<ListStoryPage> {
-  final ListStoryProvider _listStoryProvider = ListStoryProvider(
-    apiServices: ApiServices(),
-  );
-
   @override
   Widget build(BuildContext context) {
     final listWatch = context.watch<ListStoryProvider>();

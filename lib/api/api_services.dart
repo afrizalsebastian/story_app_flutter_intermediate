@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
 import 'package:story_app_flutter_intermediate/model/list_story.dart';
 import 'package:story_app_flutter_intermediate/model/login.dart';
+import 'package:story_app_flutter_intermediate/model/story.dart';
 import 'package:story_app_flutter_intermediate/model/upload_response.dart';
 
 class ApiServices {
@@ -47,7 +48,7 @@ class ApiServices {
     );
 
     if (response.statusCode == 200) {
-      return loginDataFromJson(response.body);
+      return LoginData.fromJson(json.decode(response.body));
     } else {
       throw Exception(json.decode(response.body)['message']);
     }
@@ -69,7 +70,7 @@ class ApiServices {
     );
 
     if (response.statusCode == 200) {
-      return listStoryResponseFromJson(response.body).listStory;
+      return ListStoryResponse.fromJson(json.decode(response.body)).listStory;
     } else {
       throw Exception('Failed to fetch data');
     }
@@ -91,7 +92,7 @@ class ApiServices {
     );
 
     if (response.statusCode == 200) {
-      return detailStoryResponseFromJson(response.body).story;
+      return DetailStoryResponse.fromJson(json.decode(response.body)).story;
     } else {
       throw Exception('Failed to fetch data');
     }
@@ -137,7 +138,7 @@ class ApiServices {
 
     if (statusCode == 201) {
       final UploadResponse uploadResponse = UploadResponse.fromJson(
-        responseData,
+        json.decode(responseData),
       );
       return uploadResponse;
     } else {

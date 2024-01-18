@@ -1,35 +1,17 @@
-import 'dart:convert';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:story_app_flutter_intermediate/model/story.dart';
 
-import 'package:story_app_flutter_intermediate/model/detail_story.dart';
+part 'list_story.freezed.dart';
+part 'list_story.g.dart';
 
-ListStoryResponse listStoryResponseFromJson(String str) =>
-    ListStoryResponse.fromJson(json.decode(str));
-
-String listStoryResponseToJson(ListStoryResponse data) =>
-    json.encode(data.toJson());
-
-class ListStoryResponse {
-  bool error;
-  String message;
-  List<Story> listStory;
-
-  ListStoryResponse({
-    required this.error,
-    required this.message,
-    required this.listStory,
-  });
+@freezed
+class ListStoryResponse with _$ListStoryResponse {
+  const factory ListStoryResponse({
+    required bool error,
+    required String message,
+    required List<Story> listStory,
+  }) = _ListStoryResponse;
 
   factory ListStoryResponse.fromJson(Map<String, dynamic> json) =>
-      ListStoryResponse(
-        error: json["error"],
-        message: json["message"],
-        listStory:
-            List<Story>.from(json["listStory"].map((x) => Story.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "error": error,
-        "message": message,
-        "listStory": List<dynamic>.from(listStory.map((x) => x.toJson())),
-      };
+      _$ListStoryResponseFromJson(json);
 }

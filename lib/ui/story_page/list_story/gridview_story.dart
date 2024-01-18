@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app_flutter_intermediate/common/styles.dart';
-import 'package:story_app_flutter_intermediate/model/detail_story.dart';
+import 'package:story_app_flutter_intermediate/model/story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 

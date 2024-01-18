@@ -1,42 +1,14 @@
-import 'dart:convert';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class User {
-  String? email;
-  String? password;
+part 'user.freezed.dart';
+part 'user.g.dart';
 
-  User({
-    this.email,
-    this.password,
-  });
+@freezed
+class User with _$User {
+  const factory User({
+    String? email,
+    String? password,
+  }) = _User;
 
-  @override
-  String toString() => 'User(email: $email, password: $password)';
-
-  Map<String, dynamic> toMap() {
-    return {
-      'email': email,
-      'password': password,
-    };
-  }
-
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      email: map['email'],
-      password: map['password'],
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory User.fromJson(String source) => User.fromMap(json.decode(source));
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is User && other.email == email && other.password == password;
-  }
-
-  @override
-  int get hashCode => Object.hash(email, password);
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }

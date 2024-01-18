@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:story_app_flutter_intermediate/api/api_services.dart';
-import 'package:story_app_flutter_intermediate/model/detail_story.dart';
+import 'package:story_app_flutter_intermediate/model/story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 
 class ListStoryProvider extends ChangeNotifier {
