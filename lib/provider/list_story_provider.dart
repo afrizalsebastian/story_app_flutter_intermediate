@@ -8,61 +8,54 @@ import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 class ListStoryProvider extends ChangeNotifier {
   final ApiServices apiServices;
 
-  ListStoryProvider({required this.apiServices}) {
-    _fetchData();
-  }
+  ListStoryProvider({required this.apiServices});
 
   List<Story> _listStory = [];
-  late ResultState _state;
+  ResultState _state = ResultState.initial;
   String _message = '';
-  int page = 1;
+  int? page = 1;
   int size = 10;
 
   String get message => _message;
   List<Story> get listStory => _listStory;
   ResultState get state => _state;
 
-  Future<dynamic> updateList() async {
-    return await _fetchData();
+  Future<void> updateList() async {
+    _listStory = [];
+    page = 1;
+    await _fetchData();
   }
 
-  Future<dynamic> _fetchData() async {
-    try {
-      _state = ResultState.loading;
-      notifyListeners();
+  Future<void> nextList() async {
+    await _fetchData();
+  }
 
-      final listStoryData = await apiServices.getListStory(page, size);
-      if (listStoryData.isEmpty) {
-        _state = ResultState.noData;
-        _listStory = [];
+  Future<void> _fetchData() async {
+    try {
+      if (page == 1) {
+        _state = ResultState.loading;
         notifyListeners();
-        return _message = 'There is no Story Posted';
-      } else {
-        _state = ResultState.hasData;
-        _listStory = listStoryData;
-        notifyListeners();
-        return listStory;
       }
+
+      final listStoryData = await apiServices.getListStory(page!, size);
+      _listStory.addAll(listStoryData);
+      _state = ResultState.hasData;
+
+      if (listStoryData.length < size) {
+        page = null;
+      } else {
+        page = page! + 1;
+      }
+
+      notifyListeners();
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
       if (e is SocketException) {
         _message = 'No Internet Connection';
-        return message;
       } else {
         _message = 'Error: $e';
-        return message;
       }
     }
-  }
-
-  Future<dynamic> prevoiusPage() async {
-    page--;
-    _fetchData();
-  }
-
-  Future<dynamic> nextPage() async {
-    page++;
-    _fetchData();
   }
 }

@@ -27,7 +27,6 @@ class _ListStoryPageState extends State<ListStoryPage> {
   @override
   Widget build(BuildContext context) {
     final listWatch = context.watch<ListStoryProvider>();
-    final listRead = context.read<ListStoryProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -97,52 +96,6 @@ class _ListStoryPageState extends State<ListStoryPage> {
                 },
               ),
             ),
-            listWatch.state == ResultState.hasData ||
-                    listWatch.state == ResultState.noData
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (listWatch.page != 1)
-                        TextButton(
-                          onPressed: () {
-                            listRead.prevoiusPage();
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.keyboard_double_arrow_left_rounded,
-                                color: Styles.primaryColor,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'Previous',
-                                style: TextStyle(color: Styles.primaryColor),
-                              )
-                            ],
-                          ),
-                        ),
-                      if (listWatch.listStory.length >= listWatch.size)
-                        TextButton(
-                          onPressed: () {
-                            listRead.nextPage();
-                          },
-                          child: const Row(
-                            children: [
-                              Text(
-                                'Next',
-                                style: TextStyle(color: Styles.primaryColor),
-                              ),
-                              SizedBox(width: 4),
-                              Icon(
-                                Icons.keyboard_double_arrow_right_rounded,
-                                color: Styles.primaryColor,
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  )
-                : Container(),
           ],
         ),
       ),

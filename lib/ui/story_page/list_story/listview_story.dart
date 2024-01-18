@@ -7,16 +7,47 @@ import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/detail_story_provider.dart';
 import 'package:story_app_flutter_intermediate/provider/list_story_provider.dart';
 
-class ListViewStory extends StatelessWidget {
+class ListViewStory extends StatefulWidget {
   final Function(String) onTap;
   const ListViewStory({super.key, required this.onTap});
+
+  @override
+  State<ListViewStory> createState() => _ListViewStoryState();
+}
+
+class _ListViewStoryState extends State<ListViewStory> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final listRead = context.read<ListStoryProvider>();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent) {
+        if (listRead.page != null) {
+          listRead.nextList();
+        }
+      }
+    });
+
+    Future.microtask(() async => listRead.nextList());
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   Widget _createItemList(BuildContext context, Story story) {
     return GestureDetector(
       onTap: () {
         final detailRead = context.read<DetailStoryProvider>();
         detailRead.upadteStoryId(story.id);
-        onTap(story.id);
+        widget.onTap(story.id);
       },
       child: Container(
         height: 250,
@@ -81,7 +112,7 @@ class ListViewStory extends StatelessWidget {
     final listWatch = context.watch<ListStoryProvider>();
     final listRead = context.read<ListStoryProvider>();
 
-    if (listWatch.state == ResultState.loading) {
+    if (listWatch.state == ResultState.loading && listWatch.page == 1) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -89,9 +120,19 @@ class ListViewStory extends StatelessWidget {
       final List<Story> listStory = listRead.listStory;
 
       return ListView.builder(
-        itemCount: listStory.length,
+        controller: scrollController,
+        itemCount: listStory.length + (listRead.page != null ? 1 : 0),
         itemBuilder: (context, index) {
-          return _createItemList(context, listStory[index]);
+          if (index == listStory.length && listRead.page != null) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else {
+            return _createItemList(context, listStory[index]);
+          }
         },
       );
     } else if (listWatch.state == ResultState.error) {
