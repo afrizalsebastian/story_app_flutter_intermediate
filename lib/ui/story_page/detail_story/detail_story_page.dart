@@ -5,16 +5,34 @@ import 'package:story_app_flutter_intermediate/common/styles.dart';
 import 'package:story_app_flutter_intermediate/model/story.dart';
 import 'package:story_app_flutter_intermediate/provider/api_enum.dart';
 import 'package:story_app_flutter_intermediate/provider/detail_story_provider.dart';
+import 'package:story_app_flutter_intermediate/ui/story_page/detail_story/story_location.dart';
 
 class DetailStoryPage extends StatelessWidget {
   final String storyId;
   const DetailStoryPage({super.key, required this.storyId});
 
   Widget _createBody(BuildContext context, Story story) {
+    final detailWatch = context.watch<DetailStoryProvider>();
     return Container(
       padding: const EdgeInsets.all(12),
       child: ListView(
         children: [
+          if (detailWatch.storyLocation != null)
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(0, 4),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              height: 250,
+              child: const StoryLocation(),
+            ),
+          const SizedBox(height: 32),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -85,16 +103,17 @@ class DetailStoryPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            "Location (${story.lat ?? 'not have latitude'}, ${story.lon ?? 'not have longitude'})",
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+          if (detailWatch.storyLocation == null)
+            const Text(
+              "Location (not have latitude, not have longitude)",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );
