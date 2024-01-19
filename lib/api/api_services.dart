@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:story_app_flutter_intermediate/model/detail_story.dart';
@@ -102,6 +103,7 @@ class ApiServices {
     List<int> bytes,
     String fileName,
     String description,
+    LatLng? location,
   ) async {
     Uri url = Uri.parse("$_baseUrl/stories");
 
@@ -120,6 +122,13 @@ class ApiServices {
     final Map<String, String> fields = {
       "description": description,
     };
+
+    if (location != null) {
+      fields.addAll({
+        "lat": location.latitude.toString(),
+        "lon": location.longitude.toString(),
+      });
+    }
 
     final Map<String, String> headers = {
       "Content-type": "multipart/form-data",

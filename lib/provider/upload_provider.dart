@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:story_app_flutter_intermediate/api/api_services.dart';
 import 'package:story_app_flutter_intermediate/model/upload_response.dart';
@@ -16,6 +17,7 @@ class UploadProvider extends ChangeNotifier {
     List<int> bytes,
     String fileName,
     String description,
+    LatLng? location,
   ) async {
     try {
       message = "";
@@ -23,8 +25,8 @@ class UploadProvider extends ChangeNotifier {
       isUploading = true;
       notifyListeners();
 
-      uploadResponse =
-          await apiService.uploadDocument(bytes, fileName, description);
+      uploadResponse = await apiService.uploadDocument(
+          bytes, fileName, description, location);
       message = uploadResponse?.message ?? "success";
       isUploading = false;
       notifyListeners();
